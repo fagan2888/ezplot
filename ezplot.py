@@ -6,6 +6,10 @@ and axes objects work as before, but have some additional functionality and
 different default styles.
 """
 
+from __future__ import division
+from __future__ import absolute_import
+from __future__ import print_function
+
 import matplotlib.pyplot as plt
 
 from matplotlib.axes import Axes
@@ -44,7 +48,7 @@ class CustomAxes(Axes):
 
     def scatter(self, x, y, **kwargs):
         kwargs.setdefault('s', 40)
-        kwargs.setdefault('c', 'k')
+        kwargs.setdefault('color', 'k')
         kwargs.setdefault('marker', 'o')
         kwargs.setdefault('linewidths', 1.5)
         kwargs.setdefault('facecolors', 'none')
