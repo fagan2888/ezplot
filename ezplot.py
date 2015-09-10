@@ -24,6 +24,7 @@ __all__ = ['figure', 'show']
 # styles or defaults the user may have set. but I'll leave it for now.
 plt.rc('lines', linewidth=2.0)
 plt.rc('legend', scatterpoints=3)
+plt.rc('legend', fontsize=12)
 plt.rc('figure', facecolor='white')
 plt.rc('axes', grid=True)
 plt.rc('grid', color='k', linestyle='-', alpha=0.2, linewidth=0.5)
@@ -45,6 +46,7 @@ class CustomAxes(Axes):
         self.spines['right'].set_visible(False)
         self.xaxis.set_tick_params(direction='out', top=False)
         self.yaxis.set_tick_params(direction='out', right=False)
+        self.autoscale(tight=True)
 
     def scatter(self, x, y, **kwargs):
         kwargs.setdefault('s', 40)
@@ -116,8 +118,12 @@ class CustomFigure(Figure):
 
 
 def figure(*args, **kwargs):
+    clear = kwargs.pop('clear', False)
     kwargs.setdefault('FigureClass', CustomFigure)
-    return plt.figure(*args, **kwargs)
+    fig = plt.figure(*args, **kwargs)
+    if clear:
+        fig.clear()
+    return fig
 
 
 def show(block=None):
