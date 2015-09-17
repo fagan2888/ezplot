@@ -36,6 +36,10 @@ plt.rc('axes', color_cycle=[
     (0.6509803921568628, 0.33725490196078434, 0.1568627450980392),
     (0.9686274509803922, 0.5058823529411764, 0.7490196078431373)])
 
+# FIXME: turn interactive mode on by default. I don't like this, but is
+# required to make a few things work for now. Should be taken out soon.
+plt.ion()
+
 
 class CustomAxes(Axes):
     name = 'custom_axes'
@@ -55,6 +59,11 @@ class CustomAxes(Axes):
         kwargs.setdefault('linewidths', 1.5)
         kwargs.setdefault('facecolors', 'none')
         super(CustomAxes, self).scatter(x, y, **kwargs)
+
+    def bar(self, *args, **kwargs):
+        if kwargs.get('color', None) is None:
+            kwargs['color'] = next(self._get_lines.color_cycle)
+        super(CustomAxes, self).bar(*args, **kwargs)
 
     def plot_banded(self, x, y=None, b1=None, **kwargs):
         if y is None:
@@ -93,15 +102,11 @@ class CustomFigure(Figure):
     'custom_axes' projection. It also adds additional kwargs and methods, but
     if these are ignored the figure acts as a standard matplotlib instance.
     """
-    def __init__(self, *args, **kwargs):
-        tight_layout = kwargs.pop('tight_layout', True)
-        super(CustomFigure, self).__init__(*args, **kwargs)
-        self.set_tight_layout(tight_layout)
-
     def add_subplot(self, *args, **kwargs):
         kwargs.setdefault('projection', 'custom_axes')
-        hidex = kwargs.pop('hidex', False)
-        hidey = kwargs.pop('hidey', False)
+        hidexy = kwargs.pop('hidexy', False)
+        hidex = kwargs.pop('hidex', hidexy)
+        hidey = kwargs.pop('hidey', hidexy)
         ax = super(CustomFigure, self).add_subplot(*args, **kwargs)
         if hidex:
             plt.setp(ax.get_xticklabels(), visible=False)
@@ -120,9 +125,24 @@ class CustomFigure(Figure):
 def figure(*args, **kwargs):
     clear = kwargs.pop('clear', False)
     kwargs.setdefault('FigureClass', CustomFigure)
+    tight_layout = kwargs.pop('tight_layout', True)
+    tight_layout_dict = {k: kwargs.pop(k)
+                         for k in ('pad', 'w_pad', 'h_pad')
+                         if kwargs.get(k, None) is not None}
+
+    # create the figure
     fig = plt.figure(*args, **kwargs)
+
+    # possibly clear the figure
     if clear:
         fig.clear()
+
+    # set tight layout
+    if tight_layout and len(tight_layout_dict) > 0:
+        fig.set_tight_layout(tight_layout_dict)
+    else:
+        fig.set_tight_layout(tight_layout)
+
     return fig
 
 
