@@ -28,8 +28,7 @@ def main():
         description=DESCRIPTION,
         long_description=LONG_DESCRIPTION,
         license='Simplified BSD',
-        packages=setuptools.find_packages(),
-        package_data={'': ['*.txt', '*.npz']},
+        py_modules=['ezplot'],
         install_requires=['matplotlib'])
 
 
