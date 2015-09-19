@@ -36,10 +36,6 @@ plt.rc('axes', color_cycle=[
     (0.6509803921568628, 0.33725490196078434, 0.1568627450980392),
     (0.9686274509803922, 0.5058823529411764, 0.7490196078431373)])
 
-# FIXME: turn interactive mode on by default. I don't like this, but is
-# required to make a few things work for now. Should be taken out soon.
-plt.ion()
-
 
 class CustomAxes(Axes):
     name = 'custom_axes'
